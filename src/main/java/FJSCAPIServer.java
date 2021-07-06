@@ -150,8 +150,8 @@ public class FJSCAPIServer {
             this.clients.remove(clientData);
             this.usernames.remove(clientData.getUsername());
         }
-        if (this.filesAccepted && transmission.getType() == FJSCAPITransferType.FILE) {
-            String fileName = transmission.getContent();
+        if (this.filesAccepted && transmission.getType() == FJSCAPITransferType.FILE) { // TODO doesn't work well
+            /*String fileName = transmission.getContent();
             System.out.println("name: " + fileName);
             long fileSize = Long.parseLong(FJSCAPICrypto.decrypt(clientData.getCryptoCode(), clientData.getIs().readLine()));
             System.out.println("size: " + fileSize);
@@ -162,7 +162,7 @@ public class FJSCAPIServer {
                 clientData.getOs().println(FJSCAPICrypto.encrypt(clientData.getCryptoCode(), "fileTooBig"));
             } else {
                 long xFileSize = fileSize;
-                String filePath = this.directory + /*"/" + clientData.getUsername() + */"/" + fileName;
+                String filePath = this.directory + /*"/" + clientData.getUsername() + * /"/" + fileName;
                 DataInputStream dataInputStream = new DataInputStream(clientData.getSocket().getInputStream());
                 FileOutputStream fileOutputStream = new FileOutputStream(filePath);
                 byte[] buffer = new byte[(int) Math.min(4112, (fileSize / 16 + 1) * 16)];
@@ -189,6 +189,7 @@ public class FJSCAPIServer {
                     transmission.setContent("fileCorrupted");
                 }
             }
+             */
         }
         return transmission;
     }

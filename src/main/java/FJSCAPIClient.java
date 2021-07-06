@@ -145,8 +145,8 @@ public class FJSCAPIClient {
 
     public void send(FJSCAPITransmission transmission) throws Exception {
         if (transmission.getContent() != null && transmission.getContent().length() != 0) {
-            if (transmission.getType() == FJSCAPITransferType.FILE) {
-                File file = new File(transmission.getContent());
+            if (transmission.getType() == FJSCAPITransferType.FILE) { // TODO todo
+                /*File file = new File(transmission.getContent());
                 if (!file.canRead()) {
                     throw new FJSCAPIError("I can't read the file");
                 }
@@ -185,6 +185,8 @@ public class FJSCAPIClient {
                 } else {
                     throw new FJSCAPIError("ERROR");
                 }
+
+                 */
             } else {
                 this.os.println(FJSCAPICrypto.encrypt(this.cryptoCode, String.valueOf(transmission.getType())));
                 this.os.println(FJSCAPICrypto.encrypt(this.cryptoCode, String.valueOf(transmission.getId())));
