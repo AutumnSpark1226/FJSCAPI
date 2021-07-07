@@ -24,4 +24,12 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub AutumnSpark1226 Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/AutumnSpark1226/FJSCAPI</url>
+        </repository>
+    </distributionManagement>
+
 </project>
