@@ -1,9 +1,10 @@
-import Exception.FJSCAPIError;
 import Exception.FJSCAPILoginException;
 import Exception.FJSCAPIPasswordException;
 import Exception.FJSCAPIUsernameException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
