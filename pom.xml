@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>AutumnSpark1226</groupId>
-    <artifactId>FJSCAPI</artifactId>
+    <groupId>autumnspark1226</groupId>
+    <artifactId>fjscapi</artifactId>
     <version>2021.07.06</version>
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
@@ -28,7 +28,7 @@
         <repository>
             <id>github</id>
             <name>GitHub AutumnSpark1226 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com</url>
+            <url>https://maven.pkg.github.com/AutumnSpark1226/FJSCAPI</url>
         </repository>
     </distributionManagement>
 </project>
