@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is the server.
  * @author AutumnSpark1226
- * @version 2021.6.2
+ * @version 2021.7.11
  */
 
 public class FJSCAPIServer {
@@ -44,7 +45,7 @@ public class FJSCAPIServer {
             while (true) {
                 ping();
                 try {
-                    Thread.sleep(60000);
+                    Thread.sleep(10000);
                 } catch (Exception e) {
                     //e.printStackTrace();
                 }
@@ -62,21 +63,7 @@ public class FJSCAPIServer {
         Boolean ok = true;
         is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         os = new PrintWriter(socket.getOutputStream(), true);
-        byte[] lenb = new byte[4];
-        socket.getInputStream().read(lenb, 0, 4);
-        ByteBuffer bb = ByteBuffer.wrap(lenb);
-        int len = bb.getInt();
-        byte[] servPubKeyBytes = new byte[len];
-        socket.getInputStream().read(servPubKeyBytes);
-        PublicKey publicKey = FJSCAPICrypto.recreatePublicKey(servPubKeyBytes);
-        byte[] bytes = FJSCAPICrypto.encryptWithPublicKey(publicKey, cryptoCode.getBytes());
-        bb = ByteBuffer.allocate(4);
-        bb.putInt(bytes.length);
-        socket.getOutputStream().write(bb.array());
-        socket.getOutputStream().write(bytes);
-        socket.getOutputStream().flush();
-        String receivedPw;
-        receivedPw = FJSCAPICrypto.decrypt(cryptoCode, is.readLine());
+        String receivedPw = receivePassword(socket, cryptoCode, is);
         if (receivedPw.equals(this.password)) {
             os.println(FJSCAPICrypto.encrypt(cryptoCode, "pwCorrect"));
             os.println(FJSCAPICrypto.encrypt(cryptoCode, this.serverType));
@@ -310,5 +297,22 @@ public class FJSCAPIServer {
          * The input must not be encrypted.
          */
         this.password = FJSCAPICrypto.hash3_256(hashedPassword);
+    }
+
+    private String receivePassword(Socket socket, String cryptoCode, BufferedReader is) throws Exception{
+        byte[] lenb = new byte[4];
+        socket.getInputStream().read(lenb, 0, 4);
+        ByteBuffer bb = ByteBuffer.wrap(lenb);
+        int len = bb.getInt();
+        byte[] servPubKeyBytes = new byte[len];
+        socket.getInputStream().read(servPubKeyBytes);
+        PublicKey publicKey = FJSCAPICrypto.recreatePublicKey(servPubKeyBytes);
+        byte[] bytes = FJSCAPICrypto.encryptWithPublicKey(publicKey, cryptoCode.getBytes());
+        bb = ByteBuffer.allocate(4);
+        bb.putInt(bytes.length);
+        socket.getOutputStream().write(bb.array());
+        socket.getOutputStream().write(bytes);
+        socket.getOutputStream().flush();
+        return FJSCAPICrypto.decrypt(cryptoCode, is.readLine());
     }
 }

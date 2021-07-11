@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>autumnspark1226</groupId>
     <artifactId>fjscapi</artifactId>
-    <version>2021.07.06</version>
+    <version>${maven.build.timestamp}</version>
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyy.MM.dd</maven.build.timestamp.format>
     </properties>
     <build>
         <plugins>
@@ -24,6 +25,14 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
     <distributionManagement>
         <repository>
             <id>github</id>

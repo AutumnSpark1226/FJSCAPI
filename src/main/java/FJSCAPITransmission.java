@@ -2,8 +2,9 @@ import java.time.Instant;
 import java.util.Random;
 
 /**
+ * This class contains all information about a transmission.
  * @author AutumnSpark1226
- * @version 2021.6.10
+ * @version 2021.7.11
  */
 
 public class FJSCAPITransmission {
