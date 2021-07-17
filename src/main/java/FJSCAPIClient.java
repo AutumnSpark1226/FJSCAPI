@@ -156,7 +156,7 @@ public class FJSCAPIClient {
     }
 
     private void receiveCryptoCode() throws Exception {
-        KeyPair keyPair = FJSCAPICrypto.generateKeyPair(512);
+        KeyPair keyPair = FJSCAPICrypto.generateKeyPair(4096);
         ByteBuffer bb = ByteBuffer.allocate(4);
         bb.putInt(keyPair.getPublic().getEncoded().length);
         this.socket.getOutputStream().write(bb.array());
