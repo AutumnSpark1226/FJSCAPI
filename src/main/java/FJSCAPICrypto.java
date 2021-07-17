@@ -16,24 +16,20 @@ import java.util.UUID;
 
 public class FJSCAPICrypto {
 
-    public static String encrypt(String seed, String cleartext) throws Exception {
-        byte[] rawKey = getRawKey(seed.getBytes(StandardCharsets.UTF_8));
-        SecretKeySpec keySpec = new SecretKeySpec(rawKey, "AES");
+    public static String encrypt(String plaintext, SecretKey key) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] result = cipher.doFinal(cleartext.getBytes(StandardCharsets.UTF_8));
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] result = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
         return toHex(result) + "-" + toHex(cipher.getIV());
     }
 
-    public static String decrypt(String seed, String encrypted) throws Exception {
+    public static String decrypt(String encrypted, SecretKey key) throws Exception {
         String[] split = encrypted.split("-");
         byte[] rawIv = toByte(split[1]);
         IvParameterSpec iv = new IvParameterSpec(rawIv);
-        byte[] rawKey = getRawKey(seed.getBytes(StandardCharsets.UTF_8));
         byte[] enc = toByte(split[0]);
-        SecretKeySpec keySpec = new SecretKeySpec(rawKey, "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, iv);
         return new String(cipher.doFinal(enc), StandardCharsets.UTF_8);
     }
 
@@ -100,19 +96,19 @@ public class FJSCAPICrypto {
         return cipher.doFinal(encrypted);
     }
 
-    public static PublicKey recreatePublicKey(byte[] encodedKey) throws Exception {
+    public static Key recreateKey(byte[] encodedKey, String instance) throws Exception {
         X509EncodedKeySpec ks = new X509EncodedKeySpec(encodedKey);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
+        KeyFactory kf = KeyFactory.getInstance(instance);
         return kf.generatePublic(ks);
     }
 
     public static String generateSmallString(int length) {
-        String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/*-+?=)(&%$§\"!,;.:#'~<>|^°}{[]\\`";
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/*-+?=)(&%$§\"!,;.:#'~<>|^°}{[]\\`";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
-        for (int ix = 0; ix < length; ix++) {
-            int index = random.nextInt(alphaNumeric.length());
-            char randomChar = alphaNumeric.charAt(index);
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            char randomChar = characters.charAt(index);
             sb.append(randomChar);
         }
         return sb.toString();
@@ -122,5 +118,11 @@ public class FJSCAPICrypto {
         final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
         final byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
         return toHex(hashBytes);
+    }
+
+    public static SecretKey generateKey(int size) throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(size);
+        return keyGenerator.generateKey();
     }
 }

@@ -1,6 +1,10 @@
 import Exception.FJSCAPIError;
 
-import java.io.*;
+import javax.crypto.SecretKey;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,8 +16,9 @@ import java.util.List;
 
 /**
  * This class is the server.
+ *
  * @author AutumnSpark1226
- * @version 2021.7.11
+ * @version 2021.7.17
  */
 
 public class FJSCAPIServer {
@@ -57,48 +62,48 @@ public class FJSCAPIServer {
         BufferedReader is;
         PrintWriter os;
         String username = null;
-        String cryptoCode = FJSCAPICrypto.generateString();
+        SecretKey key = FJSCAPICrypto.generateKey(256);
         int sessionId = nextSessionId;
         nextSessionId++;
         Boolean ok = true;
         is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         os = new PrintWriter(socket.getOutputStream(), true);
-        String receivedPw = receivePassword(socket, cryptoCode, is);
+        String receivedPw = receivePassword(socket, key, is);
         if (receivedPw.equals(this.password)) {
-            os.println(FJSCAPICrypto.encrypt(cryptoCode, "pwCorrect"));
-            os.println(FJSCAPICrypto.encrypt(cryptoCode, this.serverType));
-            username = FJSCAPICrypto.decrypt(cryptoCode, is.readLine());
-            os.println(FJSCAPICrypto.encrypt(cryptoCode, String.valueOf(sessionId)));
+            os.println(FJSCAPICrypto.encrypt("pwCorrect", key));
+            os.println(FJSCAPICrypto.encrypt(this.serverType, key));
+            username = FJSCAPICrypto.decrypt(is.readLine(), key);
+            os.println(FJSCAPICrypto.encrypt(String.valueOf(sessionId), key));
             if (username.length() <= 3 && username.equalsIgnoreCase("server")) { //This should always be false, but there should be no chance for clients without this test.
-                os.println(FJSCAPICrypto.encrypt(cryptoCode, "usernameError"));
+                os.println(FJSCAPICrypto.encrypt("usernameError", key));
             } else if (this.usernames.size() >= this.serverSlots || this.clients.size() >= this.serverSlots) {
-                os.println(FJSCAPICrypto.encrypt(cryptoCode, "serverFull"));
+                os.println(FJSCAPICrypto.encrypt("serverFull", key));
                 if (this.usernames.size() != this.clients.size()) {
                     FJSCAPITransmission transmission = new FJSCAPITransmission(FJSCAPITransferType.COMMAND, "serverError", "server");
                     sendToAnyone(transmission);
                 }
                 ok = false;
-                os.println(FJSCAPICrypto.encrypt(cryptoCode, "serverFull"));
+                os.println(FJSCAPICrypto.encrypt("serverFull", key));
             } else if (this.usernames.contains(username)) {
                 ok = false;
-                os.println(FJSCAPICrypto.encrypt(cryptoCode, "usernameAlreadyExists"));
+                os.println(FJSCAPICrypto.encrypt("usernameAlreadyExists", key));
             } else {
                 this.usernames.add(username);
             }
         } else {
             ok = false;
-            os.println(FJSCAPICrypto.encrypt(cryptoCode, "pwError"));
+            os.println(FJSCAPICrypto.encrypt("pwError", key));
             is.close();
             os.close();
             socket.close();
         }
         if (ok) {
             try {
-                os.println(FJSCAPICrypto.encrypt(cryptoCode, "loginOk"));
+                os.println(FJSCAPICrypto.encrypt("loginOk", key));
             } catch (Exception e) {
                 //e.printStackTrace();
             }
-            FJSCAPIClientData clientData = new FJSCAPIClientData(socket, is, os, username, cryptoCode, sessionId);
+            FJSCAPIClientData clientData = new FJSCAPIClientData(socket, is, os, username, key, sessionId);
             this.clients.add(clientData);
             for (FJSCAPIClientConnectedListener hl : this.listeners) {
                 Thread thread = new Thread(() -> hl.connected(clientData));
@@ -115,11 +120,11 @@ public class FJSCAPIServer {
     }
 
     public void send(FJSCAPIClientData clientData, FJSCAPITransmission transmission) throws Exception {
-        clientData.getOs().println(FJSCAPICrypto.encrypt(clientData.getCryptoCode(), String.valueOf(transmission.getType())));
-        clientData.getOs().println(FJSCAPICrypto.encrypt(clientData.getCryptoCode(), String.valueOf(transmission.getId())));
-        clientData.getOs().println(FJSCAPICrypto.encrypt(clientData.getCryptoCode(), transmission.getContent()));
-        clientData.getOs().println(FJSCAPICrypto.encrypt(clientData.getCryptoCode(), transmission.getUser()));
-        clientData.getOs().println(FJSCAPICrypto.encrypt(clientData.getCryptoCode(), transmission.getCreationTime().toString()));
+        clientData.getOs().println(FJSCAPICrypto.encrypt(String.valueOf(transmission.getType()), clientData.getKey()));
+        clientData.getOs().println(FJSCAPICrypto.encrypt(String.valueOf(transmission.getId()), clientData.getKey()));
+        clientData.getOs().println(FJSCAPICrypto.encrypt(transmission.getContent(), clientData.getKey()));
+        clientData.getOs().println(FJSCAPICrypto.encrypt(transmission.getUser(), clientData.getKey()));
+        clientData.getOs().println(FJSCAPICrypto.encrypt(transmission.getCreationTime().toString(), clientData.getKey()));
     }
 
     public FJSCAPITransmission receive(FJSCAPIClientData clientData) throws Exception {
@@ -128,10 +133,10 @@ public class FJSCAPIServer {
             throw new FJSCAPIError(clientData.getUsername() + " was kicked");
         }
         FJSCAPITransmission transmission;
-        FJSCAPITransferType type = FJSCAPITransferType.valueOf(FJSCAPICrypto.decrypt(clientData.getCryptoCode(), clientData.getIs().readLine()));
-        long id = Long.parseLong(FJSCAPICrypto.decrypt(clientData.getCryptoCode(), clientData.getIs().readLine()));
-        String content = FJSCAPICrypto.decrypt(clientData.getCryptoCode(), clientData.getIs().readLine());
-        Instant creationTime = Instant.parse(FJSCAPICrypto.decrypt(clientData.getCryptoCode(), clientData.getIs().readLine()));
+        FJSCAPITransferType type = FJSCAPITransferType.valueOf(FJSCAPICrypto.decrypt(clientData.getIs().readLine(), clientData.getKey()));
+        long id = Long.parseLong(FJSCAPICrypto.decrypt(clientData.getIs().readLine(), clientData.getKey()));
+        String content = FJSCAPICrypto.decrypt(clientData.getIs().readLine(), clientData.getKey());
+        Instant creationTime = Instant.parse(FJSCAPICrypto.decrypt(clientData.getIs().readLine(), clientData.getKey()));
         transmission = new FJSCAPITransmission(type, content, clientData.getUsername(), id, creationTime);
         if (transmission.getType() == FJSCAPITransferType.COMMAND && transmission.getContent().equals("disconnect")) {
             this.clients.remove(clientData);
@@ -292,27 +297,27 @@ public class FJSCAPIServer {
         this.password = hashedPassword;
     }
 
-    public void setPlainPassword(String hashedPassword) throws Exception {
+    public void setPlainPassword(String password) throws Exception {
         /**
          * The input must not be encrypted.
          */
-        this.password = FJSCAPICrypto.hash3_256(hashedPassword);
+        this.password = FJSCAPICrypto.hash3_256(password);
     }
 
-    private String receivePassword(Socket socket, String cryptoCode, BufferedReader is) throws Exception{
+    private String receivePassword(Socket socket, SecretKey key, BufferedReader is) throws Exception{
         byte[] lenb = new byte[4];
         socket.getInputStream().read(lenb, 0, 4);
         ByteBuffer bb = ByteBuffer.wrap(lenb);
         int len = bb.getInt();
         byte[] servPubKeyBytes = new byte[len];
         socket.getInputStream().read(servPubKeyBytes);
-        PublicKey publicKey = FJSCAPICrypto.recreatePublicKey(servPubKeyBytes);
-        byte[] bytes = FJSCAPICrypto.encryptWithPublicKey(publicKey, cryptoCode.getBytes());
+        PublicKey publicKey = (PublicKey) FJSCAPICrypto.recreateKey(servPubKeyBytes, "RSA");
+        byte[] bytes = FJSCAPICrypto.encryptWithPublicKey(publicKey, key.getEncoded());
         bb = ByteBuffer.allocate(4);
         bb.putInt(bytes.length);
         socket.getOutputStream().write(bb.array());
         socket.getOutputStream().write(bytes);
         socket.getOutputStream().flush();
-        return FJSCAPICrypto.decrypt(cryptoCode, is.readLine());
+        return FJSCAPICrypto.decrypt(is.readLine(), key);
     }
 }

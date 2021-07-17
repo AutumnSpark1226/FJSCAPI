@@ -1,3 +1,4 @@
+import javax.crypto.SecretKey;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -10,18 +11,18 @@ import java.net.Socket;
 public class FJSCAPIClientData {
     private final String username;
     private final int sessionId;
-    private String cryptoCode;
+    private SecretKey key;
     private final Socket socket;
     private final PrintWriter os;
     private final BufferedReader is;
     public Boolean connected;
 
-    public FJSCAPIClientData(Socket socket, BufferedReader is, PrintWriter os, String username, String cryptoCode, Integer sessionId) {
+    public FJSCAPIClientData(Socket socket, BufferedReader is, PrintWriter os, String username, SecretKey key, Integer sessionId) {
         this.socket = socket;
         this.is = is;
         this.os = os;
         this.username = username;
-        this.cryptoCode = cryptoCode;
+        this.key = key;
         this.sessionId = sessionId;
         this.connected = true;
     }
@@ -42,15 +43,15 @@ public class FJSCAPIClientData {
         return this.username;
     }
 
-    public String getCryptoCode() {
-        return this.cryptoCode;
+    public SecretKey getKey() {
+        return this.key;
     }
 
     public Integer getSessionId() {
         return this.sessionId;
     }
 
-    public void setCryptoCode(String newCryptoCode) {
-        this.cryptoCode = newCryptoCode;
+    public void setKey(SecretKey key) {
+        this.key = key;
     }
 }
