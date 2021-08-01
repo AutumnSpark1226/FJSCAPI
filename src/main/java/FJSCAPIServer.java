@@ -292,7 +292,7 @@ public class FJSCAPIServer {
 
     public void setPassword(String hashedPassword) {
         /**
-         * The input must be encrypted with SHA3-256.
+         * The input must be encrypted with SHA-256.
          */
         this.password = hashedPassword;
     }

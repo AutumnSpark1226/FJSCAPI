@@ -36,7 +36,7 @@ public class FJSCAPIClient {
         connect(host, port, password, username);
     }
 
-    public FJSCAPIClient(String host, int port, String password, Boolean passwordHashed, @org.jetbrains.annotations.NotNull String username) throws Exception {
+    public FJSCAPIClient(String host, int port, String password, Boolean passwordHashed, String username) throws Exception {
         /**
          * The constructor needs host, port, password and username and connects to the server. The username must be longer than 3 letters.
          * If you want to use a hashed password set password hashed to true. The password must be hashed with SHA-256.
