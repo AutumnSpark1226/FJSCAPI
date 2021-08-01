@@ -29,7 +29,7 @@ public class FJSCAPIClient {
     private BufferedReader is;
     private String serverType;
 
-    public FJSCAPIClient(String host, int port, String password, @org.jetbrains.annotations.NotNull String username) throws Exception {
+    public FJSCAPIClient(String host, int port, String password, String username) throws Exception {
         /**
          * The constructor needs host, port, password and username and connects to the server. The username must be longer than 3 letters.
          */
@@ -39,10 +39,10 @@ public class FJSCAPIClient {
     public FJSCAPIClient(String host, int port, String password, Boolean passwordHashed, @org.jetbrains.annotations.NotNull String username) throws Exception {
         /**
          * The constructor needs host, port, password and username and connects to the server. The username must be longer than 3 letters.
-         * If you want to use a hashed password set password hashed to true. The password must be hashed with SHA3-256.
+         * If you want to use a hashed password set password hashed to true. The password must be hashed with SHA-256.
          */
         if (!passwordHashed) {
-            password = FJSCAPICrypto.hash3_256(password);
+            password = FJSCAPICrypto.hash_256(password);
         }
         connect(host, port, password, username);
     }
@@ -179,7 +179,7 @@ public class FJSCAPIClient {
             this.os = new PrintWriter(this.socket.getOutputStream(), true);
             this.is = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             receiveCryptoCode();
-            this.os.println(FJSCAPICrypto.encrypt(FJSCAPICrypto.hash3_256(password), this.key));
+            this.os.println(FJSCAPICrypto.encrypt(FJSCAPICrypto.hash_256(password), this.key));
             String input = FJSCAPICrypto.decrypt(this.is.readLine(), this.key);
             if (input.equals("pwCorrect")) {
                 this.serverType = FJSCAPICrypto.decrypt(this.is.readLine(), this.key);

@@ -40,7 +40,7 @@ public class FJSCAPIServer {
     public FJSCAPIServer(int newPort, int slots, String newPassword, String newServerType) throws Exception {
         this.port = newPort;
         this.serverSlots = slots;
-        this.password = FJSCAPICrypto.hash3_256(newPassword);
+        this.password = FJSCAPICrypto.hash_256(newPassword);
         this.serverType = newServerType;
         this.server = new ServerSocket(port);
         this.clients = new ArrayList<>(serverSlots);
@@ -301,7 +301,7 @@ public class FJSCAPIServer {
         /**
          * The input must not be encrypted.
          */
-        this.password = FJSCAPICrypto.hash3_256(password);
+        this.password = FJSCAPICrypto.hash_256(password);
     }
 
     private String receivePassword(Socket socket, SecretKey key, BufferedReader is) throws Exception{
