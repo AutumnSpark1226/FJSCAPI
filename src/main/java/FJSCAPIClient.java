@@ -155,7 +155,7 @@ public class FJSCAPIClient {
         return this.sessionId;
     }
 
-    private void receiveCryptoCode() throws Exception {
+    private void receiveCryptoCode() throws Exception { // TODO rename
         KeyPair keyPair = FJSCAPICrypto.generateKeyPair(4096);
         ByteBuffer bb = ByteBuffer.allocate(4);
         bb.putInt(keyPair.getPublic().getEncoded().length);
