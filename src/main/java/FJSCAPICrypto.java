@@ -115,7 +115,7 @@ public class FJSCAPICrypto {
     }
 
     public static String hash_256(String input) throws Exception {
-        final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+        final MessageDigest digest = MessageDigest.getInstance("SHA-256");
         final byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
         return toHex(hashBytes);
     }
