@@ -3,3 +3,7 @@
 [![CodeQL](https://github.com/AutumnSpark1226/FJSCAPI/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AutumnSpark1226/FJSCAPI/actions/workflows/codeql-analysis.yml)
 # FJSCAPI - free java server client application programming interface
 This api can be used to easily create server client applications.
+# TODO
+| Task          | Status             |
+| ------------- | ------------------ |
+| Documentation | WIP                |
