@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
+ * This class performs the cryptographic actions in my project.
  * @author AutumnSpark1226
  * @version 2021.6.2
  */
@@ -31,15 +32,6 @@ public class FJSCAPICrypto {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
         cipher.init(Cipher.DECRYPT_MODE, key, iv);
         return new String(cipher.doFinal(enc), StandardCharsets.UTF_8);
-    }
-
-    private static byte[] getRawKey(byte[] seed) throws Exception {
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        sr.setSeed(seed);
-        kgen.init(128, sr);
-        SecretKey skey = kgen.generateKey();
-        return skey.getEncoded();
     }
 
     public static String toHex(String txt) {

@@ -1,6 +1,7 @@
 package Exception;
 
 /**
+ * This exception will be thrown if your username breaks these rules: 1. It mustn't be 'server'. 2. It must be longer than 3 characters.
  * @author AutumnSpark1226
  * @version 2020.12.5
  */

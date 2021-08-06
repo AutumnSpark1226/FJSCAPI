@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
+ * This class stores the values of the client.
  * @author AutumnSpark1226
  * @version 2021.6.10
  */

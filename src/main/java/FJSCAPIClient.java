@@ -206,7 +206,6 @@ public class FJSCAPIClient {
             } else {
                 throw new FJSCAPIUsernameException("Your username is too short.");
             }
-
         }
         System.gc();
     }
