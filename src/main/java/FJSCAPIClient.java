@@ -56,7 +56,8 @@ public class FJSCAPIClient {
 
     public void send(FJSCAPITransmission transmission) throws Exception {
         if (transmission.getContent() != null && transmission.getContent().length() != 0) {
-            if (transmission.getType() == FJSCAPITransferType.FILE) { // TODO test, etc
+             // FIXME often problems
+            if (transmission.getType() == FJSCAPITransferType.FILE) {
                 /*File file = new File(transmission.getContent());
                 if (!file.canRead()) {
                     throw new FJSCAPIError("I can't read the file");
