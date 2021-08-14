@@ -8,3 +8,4 @@ This api can be used to easily create server client applications.
 | Task          | Status             |
 | ------------- | ------------------ |
 | Documentation | WIP                |
+| Clean code    | add comments       |
