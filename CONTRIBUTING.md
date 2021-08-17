@@ -1,2 +1,2 @@
 # Contributing
-Just frok this project, write your code and create a pull request.
+Just fork this project, write your code and create a pull request.
